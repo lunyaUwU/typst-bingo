@@ -5,6 +5,33 @@
   size: 15pt,
   font: "Helvetica"
 )
+#let myplugin = plugin("typst_bingo.wasm")
+#let u32_to_u8_array(x) = {
+  let a = ()
+  let b = x
+  let c = 0
+  for i in range(3) {
+    c = int(calc.rem(b,256))
+    b = int((b - calc.rem(b,256)) / 256)
+   a.push(c)
+  }
+  return a
+}
+#let shuffle(items:array,seed: int) = {
+  let s = u32_to_u8_array(seed)
+  [#seed]
+  let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(s)) 
+  let out = ()
+  for index in indexes {
+    out.push(items.at(index))
+  }
+  return out
+}
+#let shuffle-i(items:array,seed: int) = {
+  let s = u32_to_u8_array(seed)
+  let indexes = myplugin.shuffle(bytes(items),bytes(s)) 
+  return array(indexes)
+}
 
 #let bingo(
   cards: ([1],[2],[3],[4],[5],[6],[7],[8],[9]),
@@ -40,18 +67,20 @@
     return (indexesB.contains(x) == false)
   })
    
-  let rng = gen-rng-f(seed)
+  //let rng = gen-rng-f(seed)
   for i in range(pages) {
     let indexes = indexesG
     let items = ()
-    (rng, items) = shuffle-f(rng, cardsI)
+    //(rng, items) = shuffle-f(rng, cardsI)
+    items = shuffle(items: cardsI, seed: seed + i)
     items = items.slice(0,cardsAmount)
     for fixedCard in fixedCards {
       let pos = fixedCard.slice(1)
       let index = (pos.at(1)) * amount + pos.at(0)
       items.at(index)= fixedCard.at(0)
     } 
-    (rng, indexes) = shuffle-f(rng, indexes)
+    //(rng, indexes) = shuffle-f(rng, indexes)
+    indexes = shuffle-i(items: indexes, seed:seed+i)
     for ensureCard in ensureCards {
       let index = indexes.at(0)
       let b = indexes.remove(0)
