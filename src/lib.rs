@@ -8,8 +8,7 @@ pub fn shuffle(arg: &[u8], seed:&[u8]) -> Vec<u8> {
     let mut output: Vec<u8> = Vec::new();
     let seed_arr = seed;
     let mut seed:u32 = 0;
-    for &s in seed_arr {
-        
+    for &s in seed_arr {      
         seed = seed*256+u32::from(s)
     } 
     let mut prng = PRNG{generator: StepGenerator8::from(seed)};

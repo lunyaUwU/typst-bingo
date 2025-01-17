@@ -1,4 +1,4 @@
-#import "@preview/suiji:0.3.0": *
+//#import "@preview/suiji:0.3.0": *
 
 #set page("a5")
 #set text(
@@ -57,21 +57,14 @@
      return x.at(2) * amount + x.at(1)
   })
 
-  indexesB = indexesB.sorted().rev()
-  //[#indexesB]
-  // for index in indexesB {
-  //  let i =  indexesG.remove(index)
-  //}
-
+  //indexesB = indexesB.sorted().rev()
   indexesG = indexesG.filter(x=> {
     return (indexesB.contains(x) == false)
   })
    
-  //let rng = gen-rng-f(seed)
   for i in range(pages) {
     let indexes = indexesG
     let items = ()
-    //(rng, items) = shuffle-f(rng, cardsI)
     items = shuffle(items: cardsI, seed: seed + i)
     items = items.slice(0,cardsAmount)
     for fixedCard in fixedCards {
@@ -79,7 +72,6 @@
       let index = (pos.at(1)) * amount + pos.at(0)
       items.at(index)= fixedCard.at(0)
     } 
-    //(rng, indexes) = shuffle-f(rng, indexes)
     indexes = shuffle-i(items: indexes, seed:seed+i)
     for ensureCard in ensureCards {
       let index = indexes.at(0)
