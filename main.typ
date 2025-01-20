@@ -6,7 +6,7 @@
   font: "Helvetica"
 )
 #let myplugin = plugin("typst_bingo.wasm")
-#let u32_to_u8_array(x) = {
+#let new_seed(x) = {
   let a = ()
   let b = x
   let c = 0
@@ -15,21 +15,23 @@
     b = int((b - calc.rem(b,256)) / 256)
    a.push(c)
   }
-  return a
+  return bytes(a)
 }
-#let shuffle(items:array,seed: int) = {
-  let s = u32_to_u8_array(seed)
-  [#seed]
-  let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(s)) 
+#let shuffle(items:array,seed) = {
+  let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(seed)) 
+  let rng = indexes.slice(items.len())
+  indexes = indexes.slice(4,items.len())
   let out = ()
   for index in indexes {
     out.push(items.at(index))
   }
-  return out
+  return (array(rng),out)
 }
-#let shuffle-i(items:array,seed: int) = {
-  let s = u32_to_u8_array(seed)
-  let indexes = myplugin.shuffle(bytes(items),bytes(s)) 
+#let shuffle-i(items:array,seed) = {
+  let indexes = myplugin.shuffle(bytes(items),bytes(seed)) 
+  //let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(seed)) 
+  let rng = indexes.slice(items.len())
+  indexes = indexes.slice(4)
   return array(indexes)
 }
 
@@ -57,24 +59,26 @@
      return x.at(2) * amount + x.at(1)
   })
 
-  //indexesB = indexesB.sorted().rev()
   indexesG = indexesG.filter(x=> {
     return (indexesB.contains(x) == false)
   })
-   
+  let rng = new_seed(seed);
   for i in range(pages) {
     let indexes = indexesG
     let items = ()
-    items = shuffle(items: cardsI, seed: seed + i)
+    (rng,items) = shuffle(items: cardsI, rng)
+    //[#rng]
     items = items.slice(0,cardsAmount)
     for fixedCard in fixedCards {
       let pos = fixedCard.slice(1)
       let index = (pos.at(1)) * amount + pos.at(0)
       items.at(index)= fixedCard.at(0)
-    } 
-    indexes = shuffle-i(items: indexes, seed:seed+i)
+    }
+    indexes = shuffle-i(items: indexes, rng)
+    //[#indexes]
     for ensureCard in ensureCards {
       let index = indexes.at(0)
+      //[#index,] 
       let b = indexes.remove(0)
       items.at(index) = ensureCard
     }
@@ -106,6 +110,6 @@
   ),
   ensureCards: ([Awa],[Gay],[NYA],[opo]),
   amount: 5,
-  pages:  200,
-  seed: seed,
+  pages: 5,
+  seed: seed+1,
 )
