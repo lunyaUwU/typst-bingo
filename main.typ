@@ -1,5 +1,3 @@
-//#import "@preview/suiji:0.3.0": *
-
 #set page("a5")
 #set text(
   size: 15pt,
@@ -19,8 +17,8 @@
 }
 #let shuffle(items:array,seed) = {
   let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(seed)) 
-  let rng = indexes.slice(items.len())
-  indexes = indexes.slice(4,items.len())
+  let rng = indexes.slice(0,4)
+  indexes = indexes.slice(4)
   let out = ()
   for index in indexes {
     out.push(items.at(index))
@@ -30,7 +28,7 @@
 #let shuffle-i(items:array,seed) = {
   let indexes = myplugin.shuffle(bytes(items),bytes(seed)) 
   //let indexes = myplugin.shuffle(bytes((range(items.len()))),bytes(seed)) 
-  let rng = indexes.slice(items.len())
+  let rng = indexes.slice(0,3)
   indexes = indexes.slice(4)
   return array(indexes)
 }
@@ -67,7 +65,6 @@
     let indexes = indexesG
     let items = ()
     (rng,items) = shuffle(items: cardsI, rng)
-    //[#rng]
     items = items.slice(0,cardsAmount)
     for fixedCard in fixedCards {
       let pos = fixedCard.slice(1)
@@ -100,7 +97,7 @@
 
 #let seed = int(sys.inputs.at("seed", default: 0))
 #bingo(
-  cards:range(1,30).map(str),
+  cards:range(1,36).map(str),
   fixedCards: (
     ([Meow],2,2),
     ([Boop],1,0),
@@ -109,7 +106,7 @@
     ([NYAA],4,4)
   ),
   ensureCards: ([Awa],[Gay],[NYA],[opo]),
-  amount: 5,
-  pages: 5,
-  seed: seed+1,
+  amount: 8,
+  pages: 2,
+  seed: 1,
 )
