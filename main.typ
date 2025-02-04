@@ -97,7 +97,7 @@
 
 #let seed = int(sys.inputs.at("seed", default: 0))
 #bingo(
-  cards:range(1,36).map(str),
+  cards:range(1,25).map(str),
   fixedCards: (
     ([Meow],2,2),
     ([Boop],1,0),
@@ -106,7 +106,7 @@
     ([NYAA],4,4)
   ),
   ensureCards: ([Awa],[Gay],[NYA],[opo]),
-  amount: 8,
-  pages: 2,
-  seed: 1,
+  amount: 5,
+  pages: 10,
+  seed: 4,
 )
